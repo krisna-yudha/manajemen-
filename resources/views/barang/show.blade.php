@@ -85,6 +85,52 @@
                                 </div>
                             </div>
 
+                            <!-- Stock Management -->
+                            @if(Auth::user()->role === 'gudang')
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 mb-3">Kelola Stok</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-blue-600">Stok Saat Ini:</span>
+                                            <span class="font-bold text-lg text-blue-800">{{ $barang->stok }} unit</span>
+                                        </div>
+                                        
+                                        <!-- Stock Adjustment Form -->
+                                        <form action="{{ route('barang.adjust-stock', $barang) }}" method="POST" class="space-y-3">
+                                            @csrf
+                                            @method('PATCH')
+                                            
+                                            <div>
+                                                <label class="block text-sm font-medium text-blue-700 mb-1">Jenis Penyesuaian</label>
+                                                <select name="adjustment_type" class="w-full text-sm border-blue-300 rounded-md" required>
+                                                    <option value="">Pilih jenis penyesuaian</option>
+                                                    <option value="add">➕ Tambah Stok</option>
+                                                    <option value="subtract">➖ Kurangi Stok</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div>
+                                                <label class="block text-sm font-medium text-blue-700 mb-1">Jumlah</label>
+                                                <input type="number" name="adjustment_amount" min="1" max="1000" 
+                                                       class="w-full text-sm border-blue-300 rounded-md" 
+                                                       placeholder="Masukkan jumlah" required>
+                                            </div>
+                                            
+                                            <div>
+                                                <label class="block text-sm font-medium text-blue-700 mb-1">Alasan</label>
+                                                <textarea name="adjustment_reason" rows="2" 
+                                                          class="w-full text-sm border-blue-300 rounded-md" 
+                                                          placeholder="Jelaskan alasan penyesuaian stok..." required></textarea>
+                                            </div>
+                                            
+                                            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 text-sm font-medium">
+                                                Sesuaikan Stok
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endif
+
                             <!-- Status & Condition -->
                             <div class="bg-green-50 p-4 rounded-lg">
                                 <h4 class="font-semibold text-green-700 mb-3">Status & Kondisi</h4>

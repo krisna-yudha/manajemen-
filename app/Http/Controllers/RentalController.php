@@ -52,9 +52,14 @@ class RentalController extends Controller
      */
     public function create()
     {
+        // Hanya tampilkan barang yang benar-benar tersedia untuk dipinjam
         $barangs = Barang::where('status', 'tersedia')
+            ->where('kondisi', 'baik')
             ->where('stok', '>', 0)
-            ->get();
+            ->get()
+            ->filter(function($barang) {
+                return $barang->stok_tersedia > 0;
+            });
             
         return view('rental.create', compact('barangs'));
     }
@@ -168,10 +173,32 @@ class RentalController extends Controller
             return back()->withErrors(['error' => 'Rental belum diapprove']);
         }
 
+        // Kurangi stok barang saat rental dimulai
+        $barang = $rental->barang;
+        if ($barang->stok < $rental->jumlah) {
+            return back()->withErrors(['error' => 'Stok tidak mencukupi untuk memulai rental']);
+        }
+
+        // Update stok dan status rental
+        $oldStok = $barang->stok;
+        $barang->decrement('stok', $rental->jumlah);
+        $newStok = $barang->fresh()->stok;
+        
+        // Log stock change
+        \App\Models\StockLog::createLog(
+            $barang,
+            \Illuminate\Support\Facades\Auth::user(),
+            'rental_out',
+            $oldStok,
+            $newStok,
+            "Rental dimulai untuk #{$rental->kode_rental}",
+            ['rental_id' => $rental->id]
+        );
+        
         $rental->update(['status' => 'ongoing']);
 
         return redirect()->route('rental.index')
-            ->with('success', 'Rental dimulai');
+            ->with('success', 'Rental dimulai dan stok telah dikurangi');
     }
 
     /**
@@ -183,10 +210,32 @@ class RentalController extends Controller
             return back()->withErrors(['error' => 'Rental belum diapprove']);
         }
 
+        // Kurangi stok barang saat barang diambil
+        $barang = $rental->barang;
+        if ($barang->stok < $rental->jumlah) {
+            return back()->withErrors(['error' => 'Stok tidak mencukupi untuk diambil']);
+        }
+
+        // Update stok dan status rental
+        $oldStok = $barang->stok;
+        $barang->decrement('stok', $rental->jumlah);
+        $newStok = $barang->fresh()->stok;
+        
+        // Log stock change
+        \App\Models\StockLog::createLog(
+            $barang,
+            \Illuminate\Support\Facades\Auth::user(),
+            'rental_out',
+            $oldStok,
+            $newStok,
+            "Barang diambil untuk rental #{$rental->kode_rental}",
+            ['rental_id' => $rental->id]
+        );
+        
         $rental->update(['status' => 'ongoing']);
 
         return redirect()->route('rental.show', $rental)
-            ->with('success', 'Barang telah dikonfirmasi diambil');
+            ->with('success', 'Barang telah dikonfirmasi diambil dan stok telah dikurangi');
     }
 
     /**
@@ -199,6 +248,51 @@ class RentalController extends Controller
             'denda' => 'nullable|numeric|min:0'
         ]);
 
+        // Kembalikan stok barang saat dikembalikan
+        $barang = $rental->barang;
+        $oldStok = $barang->stok;
+        $barang->increment('stok', $rental->jumlah);
+        $newStok = $barang->fresh()->stok;
+        
+        // Log stock return
+        \App\Models\StockLog::createLog(
+            $barang,
+            \Illuminate\Support\Facades\Auth::user(),
+            'rental_return',
+            $oldStok,
+            $newStok,
+            "Barang dikembalikan dari rental #{$rental->kode_rental}",
+            ['rental_id' => $rental->id, 'kondisi_kembali' => $request->kondisi_kembali]
+        );
+
+        // Update kondisi barang berdasarkan kondisi pengembalian
+        $kondisi_kembali = strtolower($request->kondisi_kembali);
+        $updated_kondisi = $barang->kondisi;
+        $updated_status = $barang->status;
+        
+        if (strpos($kondisi_kembali, 'rusak') !== false) {
+            $updated_kondisi = 'rusak';
+            $updated_status = 'tidak_tersedia';
+        } elseif (strpos($kondisi_kembali, 'maintenance') !== false || 
+                  strpos($kondisi_kembali, 'perbaikan') !== false ||
+                  strpos($kondisi_kembali, 'service') !== false) {
+            $updated_kondisi = 'maintenance';
+            $updated_status = 'maintenance';
+        } elseif (strpos($kondisi_kembali, 'baik') !== false || 
+                  strpos($kondisi_kembali, 'normal') !== false) {
+            $updated_kondisi = 'baik';
+            $updated_status = 'tersedia';
+        }
+
+        // Update barang condition if needed
+        if ($updated_kondisi !== $barang->kondisi || $updated_status !== $barang->status) {
+            $barang->update([
+                'kondisi' => $updated_kondisi,
+                'status' => $updated_status,
+                'catatan_maintenance' => $request->kondisi_kembali
+            ]);
+        }
+
         $rental->update([
             'status' => 'returned',
             'tanggal_kembali_aktual' => now()->toDateString(),
@@ -206,7 +300,14 @@ class RentalController extends Controller
             'denda' => $request->denda ?? 0
         ]);
 
+        $kondisiMessage = '';
+        if ($updated_kondisi === 'rusak') {
+            $kondisiMessage = ' Barang ditandai sebagai RUSAK dan tidak tersedia untuk dipinjam.';
+        } elseif ($updated_kondisi === 'maintenance') {
+            $kondisiMessage = ' Barang memerlukan MAINTENANCE sebelum dapat dipinjam kembali.';
+        }
+
         return redirect()->route('rental.index')
-            ->with('success', 'Barang telah dikembalikan');
+            ->with('success', 'Barang telah dikembalikan dan stok telah ditambahkan kembali.' . $kondisiMessage);
     }
 }

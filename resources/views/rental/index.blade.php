@@ -110,7 +110,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <a href="{{ route('rental.show', $rental) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
                                         
-                                        @if(Auth::user()->role === 'manager' || Auth::user()->role === 'gudang')
+                                        @if(Auth::user()->role === 'gudang')
                                             @if($rental->status === 'approved')
                                                 <form method="POST" action="{{ route('rental.start', $rental) }}" class="inline-block ml-2">
                                                     @csrf

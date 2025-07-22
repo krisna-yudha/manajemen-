@@ -93,10 +93,21 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900">
-                                            <span class="font-semibold {{ $barang->isLowStock() ? 'text-red-600' : 'text-green-600' }}">
-                                                {{ $barang->stok }}
-                                            </span>
-                                            / {{ $barang->stok_minimum }} min
+                                            <div class="flex items-center space-x-2">
+                                                <span class="font-semibold {{ $barang->isLowStock() ? 'text-red-600' : 'text-green-600' }}">
+                                                    {{ $barang->stok }}
+                                                </span>
+                                                <span class="text-gray-500">total</span>
+                                            </div>
+                                            @if(Auth::user()->role === 'gudang')
+                                                <div class="text-xs text-gray-600">
+                                                    Tersedia: <span class="font-medium text-blue-600">{{ $barang->stok_tersedia }}</span>
+                                                </div>
+                                                <div class="text-xs text-gray-600">
+                                                    Dipinjam: <span class="font-medium text-orange-600">{{ $barang->stok_dipinjam }}</span>
+                                                </div>
+                                            @endif
+                                            <div class="text-xs text-gray-500">Min: {{ $barang->stok_minimum }}</div>
                                         </div>
                                         @if($barang->isLowStock())
                                             <span class="text-xs text-red-600">⚠️ Stok Rendah</span>

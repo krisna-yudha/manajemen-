@@ -52,6 +52,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Barang management - Hanya Gudang yang bisa kelola barang
         Route::resource('barang', BarangController::class);
         
+        // Stock adjustment - Gudang bisa adjust stok manual
+        Route::patch('/barang/{barang}/adjust-stock', [BarangController::class, 'adjustStock'])->name('barang.adjust-stock');
+        
         // Rental approval dan operasional - Gudang yang handle semua operasional rental
         Route::get('/rental/pending/approval', [RentalController::class, 'pending'])->name('rental.pending.gudang');
         Route::post('/rental/{rental}/approve', [RentalController::class, 'approve'])->name('rental.approve');
@@ -59,6 +62,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/rental/{rental}/start', [RentalController::class, 'start'])->name('rental.start');
         Route::post('/rental/{rental}/take', [RentalController::class, 'take'])->name('rental.take');
         Route::post('/rental/{rental}/return', [RentalController::class, 'return'])->name('rental.return');
+        
+        // Maintenance management - Kelola barang maintenance
+        Route::get('/maintenance/barang', [RoleController::class, 'maintenanceBarang'])->name('maintenance.barang');
+        Route::patch('/maintenance/barang/{barang}', [RoleController::class, 'updateMaintenanceStatus'])->name('maintenance.update');
     });
 
     // Manager specific routes - View only untuk monitoring

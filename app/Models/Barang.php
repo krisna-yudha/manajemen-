@@ -20,7 +20,8 @@ class Barang extends Model
         'lokasi_penyimpanan',
         'harga_sewa_per_hari',
         'foto',
-        'status'
+        'status',
+        'catatan_maintenance'
     ];
 
     protected $casts = [
@@ -48,7 +49,7 @@ class Barang extends Model
      */
     public function isAvailable()
     {
-        return $this->status === 'tersedia' && $this->stok > 0;
+        return $this->status === 'tersedia' && $this->kondisi === 'baik' && $this->stok > 0;
     }
 
     /**
@@ -62,10 +63,44 @@ class Barang extends Model
     }
 
     /**
-     * Get stok tersedia untuk dipinjam
+     * Get stok tersedia untuk dipinjam (tidak termasuk yang sedang maintenance/rusak)
      */
     public function getStokTersediaAttribute()
     {
-        return $this->stok - $this->stok_dipinjam;
+        // Stok tersedia adalah stok fisik dikurangi yang sedang dipinjam
+        // Dan hanya tersedia jika status barang tersedia dan kondisi baik
+        if ($this->status !== 'tersedia' || $this->kondisi !== 'baik') {
+            return 0;
+        }
+        
+        return max(0, $this->stok - $this->stok_dipinjam);
+    }
+
+    /**
+     * Get status ketersediaan untuk rental
+     */
+    public function getRentalStatusAttribute()
+    {
+        if ($this->kondisi === 'rusak') {
+            return 'Rusak - Tidak dapat dipinjam';
+        }
+        
+        if ($this->kondisi === 'maintenance') {
+            return 'Dalam Maintenance';
+        }
+        
+        if ($this->status === 'maintenance') {
+            return 'Sedang Maintenance';
+        }
+        
+        if ($this->status === 'tidak_tersedia') {
+            return 'Tidak Tersedia';
+        }
+        
+        if ($this->stok_tersedia <= 0) {
+            return 'Stok Habis';
+        }
+        
+        return 'Tersedia untuk dipinjam';
     }
 }

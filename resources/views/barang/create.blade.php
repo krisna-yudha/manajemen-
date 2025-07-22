@@ -10,8 +10,79 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    <form method="POST" action="{{ route('barang.store') }}" enctype="multipart/form-data">
-                        @csrf
+                    <!-- Mode Selection -->
+                    <div class="mb-8">
+                        <div class="flex space-x-1 rounded-lg bg-gray-100 p-1">
+                            <button type="button" id="newItemBtn" onclick="switchMode('new')" 
+                                    class="w-1/2 rounded-md py-2 px-4 text-sm font-medium transition-colors bg-white text-gray-900 shadow">
+                                Tambah Barang Baru
+                            </button>
+                            <button type="button" id="addStockBtn" onclick="switchMode('existing')" 
+                                    class="w-1/2 rounded-md py-2 px-4 text-sm font-medium transition-colors text-gray-500 hover:text-gray-900">
+                                Tambah Stok Barang Existing
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Add Stock to Existing Item Form -->
+                    <div id="existingItemForm" class="hidden">
+                        <form method="POST" action="{{ route('barang.store') }}">
+                            @csrf
+                            <input type="hidden" name="add_to_existing" value="1">
+                            
+                            <div class="space-y-6">
+                                <h3 class="text-lg font-medium text-gray-900">Tambah Stok ke Barang yang Sudah Ada</h3>
+                                
+                                <div>
+                                    <label for="existing_barang_id" class="block text-sm font-medium text-gray-700 mb-2">Pilih Barang</label>
+                                    <div class="relative">
+                                        <input type="text" id="search_barang" placeholder="Cari barang..." class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-2">
+                                        <select name="existing_barang_id" id="existing_barang_id" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                                            <option value="">Pilih barang untuk ditambah stoknya...</option>
+                                            @foreach($existingBarangs as $item)
+                                                <option value="{{ $item->id }}" data-current-stock="{{ $item->stok }}" data-search="{{ strtolower($item->kode_barang . ' ' . $item->nama_barang) }}">
+                                                    {{ $item->kode_barang }} - {{ $item->nama_barang }} (Stok saat ini: {{ $item->stok }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @error('existing_barang_id')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="additional_stock" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Stok yang Ditambahkan</label>
+                                    <input type="number" name="additional_stock" id="additional_stock" min="1" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                                    @error('additional_stock')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="stock_reason" class="block text-sm font-medium text-gray-700 mb-2">Alasan Penambahan Stok</label>
+                                    <textarea name="stock_reason" id="stock_reason" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Jelaskan alasan penambahan stok (contoh: pembelian baru, pengembalian dari perbaikan, dll)" required></textarea>
+                                    @error('stock_reason')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="flex justify-end space-x-3">
+                                    <a href="{{ route('barang.index') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                        Batal
+                                    </a>
+                                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                        Tambah Stok
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- New Item Form -->
+                    <div id="newItemForm">
+                        <form method="POST" action="{{ route('barang.store') }}" enctype="multipart/form-data">
+                            @csrf
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Kode Barang -->
@@ -165,10 +236,96 @@
                             </button>
                         </div>
 
-                    </form>
+                        </form>
+                    </div>
 
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function switchMode(mode) {
+            const newItemForm = document.getElementById('newItemForm');
+            const existingItemForm = document.getElementById('existingItemForm');
+            const newItemBtn = document.getElementById('newItemBtn');
+            const addStockBtn = document.getElementById('addStockBtn');
+
+            if (mode === 'new') {
+                newItemForm.classList.remove('hidden');
+                existingItemForm.classList.add('hidden');
+                newItemBtn.className = 'w-1/2 rounded-md py-2 px-4 text-sm font-medium transition-colors bg-white text-gray-900 shadow';
+                addStockBtn.className = 'w-1/2 rounded-md py-2 px-4 text-sm font-medium transition-colors text-gray-500 hover:text-gray-900';
+            } else {
+                newItemForm.classList.add('hidden');
+                existingItemForm.classList.remove('hidden');
+                newItemBtn.className = 'w-1/2 rounded-md py-2 px-4 text-sm font-medium transition-colors text-gray-500 hover:text-gray-900';
+                addStockBtn.className = 'w-1/2 rounded-md py-2 px-4 text-sm font-medium transition-colors bg-white text-gray-900 shadow';
+            }
+        }
+
+        // Show current stock when selecting existing item
+        document.getElementById('existing_barang_id').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const currentStock = selectedOption.getAttribute('data-current-stock');
+            
+            if (currentStock) {
+                const stockInfo = document.createElement('div');
+                stockInfo.id = 'current-stock-info';
+                stockInfo.className = 'mt-2 text-sm text-blue-600 font-medium';
+                stockInfo.textContent = `Stok saat ini: ${currentStock} unit`;
+                
+                // Remove existing info if any
+                const existingInfo = document.getElementById('current-stock-info');
+                if (existingInfo) {
+                    existingInfo.remove();
+                }
+                
+                // Add after the select element
+                this.parentNode.appendChild(stockInfo);
+            }
+        });
+
+        // Search functionality for existing items
+        document.getElementById('search_barang').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const select = document.getElementById('existing_barang_id');
+            const options = select.querySelectorAll('option');
+            
+            options.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = 'block';
+                    return;
+                }
+                
+                const searchData = option.getAttribute('data-search');
+                if (searchData && searchData.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+
+        // Auto-calculate total stock
+        document.getElementById('additional_stock').addEventListener('input', function() {
+            const additionalStock = parseInt(this.value) || 0;
+            const currentStockInfo = document.getElementById('current-stock-info');
+            
+            if (currentStockInfo && additionalStock > 0) {
+                const currentStock = parseInt(currentStockInfo.textContent.match(/\d+/)[0]);
+                const totalStock = currentStock + additionalStock;
+                
+                let totalInfo = document.getElementById('total-stock-info');
+                if (!totalInfo) {
+                    totalInfo = document.createElement('div');
+                    totalInfo.id = 'total-stock-info';
+                    totalInfo.className = 'mt-1 text-sm text-green-600 font-medium';
+                    this.parentNode.appendChild(totalInfo);
+                }
+                
+                totalInfo.textContent = `Total stok setelah penambahan: ${totalStock} unit`;
+            }
+        });
+    </script>
 </x-app-layout>

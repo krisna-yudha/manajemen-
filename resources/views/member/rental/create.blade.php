@@ -57,11 +57,12 @@
                                     @foreach($availableBarangs as $barang)
                                         <option 
                                             value="{{ $barang->id }}"
-                                            data-stok="{{ $barang->stok }}"
+                                            data-stok="{{ $barang->stok_tersedia }}"
                                             data-kategori="{{ $barang->kategori }}"
                                             data-lokasi="{{ $barang->lokasi }}"
                                         >
-                                            {{ $barang->nama_barang }} ({{ $barang->kode_barang }}) - Stok: {{ $barang->stok }}
+                                            {{ $barang->nama_barang }} ({{ $barang->kode_barang }}) - 
+                                            Tersedia: {{ $barang->stok_tersedia }} unit - {{ $barang->rental_status }}
                                         </option>
                                     @endforeach
                                 </select>

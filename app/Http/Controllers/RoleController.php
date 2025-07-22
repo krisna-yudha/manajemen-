@@ -89,12 +89,14 @@ class RoleController extends Controller
      */
     public function reportBarang()
     {
-        // Traffic data untuk grafik
+        // Traffic data untuk grafik - Update logic untuk include maintenance
         $trafikData = [
-            'barangKeluar' => \App\Models\Rental::whereIn('status', ['active', 'completed'])->count(),
-            'barangMasuk' => \App\Models\Rental::where('status', 'completed')->count(),
-            'sedangRental' => \App\Models\Rental::where('status', 'active')->count(),
-            'totalRental' => \App\Models\Rental::count()
+            'barangKeluar' => \App\Models\Rental::whereIn('status', ['ongoing', 'approved'])->count(),
+            'barangMasuk' => \App\Models\Rental::where('status', 'returned')->count(),
+            'sedangRental' => \App\Models\Rental::where('status', 'ongoing')->count(),
+            'totalRental' => \App\Models\Rental::count(),
+            'maintenance' => \App\Models\Barang::where('status', 'maintenance')->count(),
+            'rusak' => \App\Models\Barang::where('kondisi', 'rusak')->count()
         ];
 
         // Data rental per bulan (6 bulan terakhir)
@@ -112,8 +114,8 @@ class RoleController extends Controller
         $statusRental = [
             'pending' => \App\Models\Rental::where('status', 'pending')->count(),
             'approved' => \App\Models\Rental::where('status', 'approved')->count(),
-            'active' => \App\Models\Rental::where('status', 'active')->count(),
-            'completed' => \App\Models\Rental::where('status', 'completed')->count(),
+            'ongoing' => \App\Models\Rental::where('status', 'ongoing')->count(),
+            'returned' => \App\Models\Rental::where('status', 'returned')->count(),
             'rejected' => \App\Models\Rental::where('status', 'rejected')->count()
         ];
 
@@ -125,10 +127,11 @@ class RoleController extends Controller
             'member' => \App\Models\User::where('role', 'member')->count()
         ];
 
-        // Kategori barang untuk bar chart
+        // Kategori barang untuk bar chart - Update untuk include maintenance dan rusak
         $kategoriData = \App\Models\Barang::selectRaw('kategori, COUNT(*) as total, 
-                                        SUM(CASE WHEN status = "tersedia" THEN 1 ELSE 0 END) as tersedia,
-                                        SUM(CASE WHEN status = "rental" THEN 1 ELSE 0 END) as rental')
+                                        SUM(CASE WHEN status = "tersedia" AND kondisi = "baik" THEN 1 ELSE 0 END) as tersedia,
+                                        SUM(CASE WHEN status = "maintenance" OR kondisi = "maintenance" THEN 1 ELSE 0 END) as maintenance,
+                                        SUM(CASE WHEN kondisi = "rusak" THEN 1 ELSE 0 END) as rusak')
                                     ->groupBy('kategori')
                                     ->get();
 
@@ -253,11 +256,26 @@ class RoleController extends Controller
 
     public function memberCreateRental(Request $request)
     {
-        $availableBarangs = Barang::where('stok', '>', 0)
+        // Hanya ambil barang yang benar-benar tersedia untuk dipinjam
+        $availableBarangs = Barang::where('status', 'tersedia')
+            ->where('kondisi', 'baik')
+            ->where('stok', '>', 0)
             ->orderBy('nama_barang')
-            ->get();
+            ->get()
+            ->filter(function($barang) {
+                return $barang->stok_tersedia > 0;
+            });
             
-        return view('member.rental.create', compact('availableBarangs'));
+        $selectedBarang = null;
+        if ($request->barang_id) {
+            $selectedBarang = Barang::find($request->barang_id);
+            if ($selectedBarang && !$selectedBarang->isAvailable()) {
+                return redirect()->route('member.rental.create')
+                    ->withErrors(['barang_id' => 'Barang yang dipilih tidak tersedia untuk dipinjam']);
+            }
+        }
+            
+        return view('member.rental.create', compact('availableBarangs', 'selectedBarang'));
     }
 
     public function memberStoreRental(Request $request)
@@ -352,10 +370,31 @@ class RoleController extends Controller
     /**
      * Display user management (only for manager)
      */
-    public function userManagement()
+    public function userManagement(Request $request)
     {
-        $users = User::all();
-        return view('management.users', compact('users'));
+        $search = $request->get('search');
+        $role = $request->get('role');
+        
+        $query = User::query();
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+        
+        if ($role) {
+            $query->where('role', $role);
+        }
+        
+        $users = $query->orderBy('created_at', 'desc')->paginate(10);
+        $allUsers = User::all(); // For statistics
+        
+        // Append search parameters to pagination links
+        $users->appends(request()->query());
+        
+        return view('management.users', compact('users', 'allUsers'));
     }
 
     /**
@@ -403,5 +442,89 @@ class RoleController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Role user berhasil diupdate');
+    }
+
+    /**
+     * Display maintenance items management (gudang only)
+     */
+    public function maintenanceBarang()
+    {
+        // Check authorization
+        if (Auth::user()->role !== 'gudang') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $maintenanceItems = \App\Models\Barang::where(function($query) {
+                $query->where('status', 'maintenance')
+                      ->orWhere('kondisi', 'maintenance')
+                      ->orWhere('kondisi', 'rusak');
+            })
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        $stats = [
+            'maintenance' => \App\Models\Barang::where('status', 'maintenance')->count(),
+            'rusak' => \App\Models\Barang::where('kondisi', 'rusak')->count(),
+            'need_repair' => \App\Models\Barang::where('kondisi', 'maintenance')->count()
+        ];
+
+        return view('gudang.maintenance', compact('maintenanceItems', 'stats'));
+    }
+
+    /**
+     * Update maintenance status
+     */
+    public function updateMaintenanceStatus(Request $request, \App\Models\Barang $barang)
+    {
+        // Check authorization
+        if (Auth::user()->role !== 'gudang') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'status' => 'required|in:tersedia,maintenance,tidak_tersedia',
+            'kondisi' => 'required|in:baik,maintenance,rusak',
+            'catatan_maintenance' => 'nullable|string|max:500'
+        ]);
+
+        // Simpan kondisi dan status sebelumnya
+        $oldKondisi = $barang->kondisi;
+        $oldStatus = $barang->status;
+
+        // Update status dan kondisi barang
+        $barang->update([
+            'status' => $request->status,
+            'kondisi' => $request->kondisi,
+            'catatan_maintenance' => $request->catatan_maintenance,
+            'updated_at' => now()
+        ]);
+
+        // Logika penyesuaian stok berdasarkan perubahan status/kondisi
+        $this->adjustStokForMaintenanceStatus($barang, $oldKondisi, $oldStatus, $request->kondisi, $request->status);
+
+        return redirect()->back()->with('success', 'Status maintenance barang berhasil diupdate dan stok telah disesuaikan');
+    }
+
+    /**
+     * Adjust stok based on maintenance status changes
+     */
+    private function adjustStokForMaintenanceStatus($barang, $oldKondisi, $oldStatus, $newKondisi, $newStatus)
+    {
+        // Jika barang dipindah ke maintenance atau rusak, kurangi stok yang tersedia
+        if (($oldKondisi === 'baik' && ($newKondisi === 'maintenance' || $newKondisi === 'rusak')) ||
+            ($oldStatus === 'tersedia' && $newStatus === 'maintenance')) {
+            
+            // Tidak mengurangi stok fisik, tetapi menandai sebagai tidak tersedia
+            // Stok tetap sama, tapi status berubah
+            
+        }
+        
+        // Jika barang kembali dari maintenance/rusak ke baik, tambahkan ke stok tersedia
+        if (($oldKondisi === 'maintenance' || $oldKondisi === 'rusak') && $newKondisi === 'baik' && $newStatus === 'tersedia') {
+            
+            // Barang kembali tersedia untuk dipinjam
+            // Tidak perlu menambah stok fisik karena stok tidak dikurangi saat maintenance
+            
+        }
     }
 }
