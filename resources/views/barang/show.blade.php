@@ -31,7 +31,7 @@
                             <!-- Foto -->
                             @if($barang->foto)
                                 <div>
-                                    <img src="{{ Storage::url($barang->foto) }}" class="w-full h-64 object-cover rounded-lg shadow-md" alt="{{ $barang->nama_barang }}">
+                                    <img src="{{ asset('storage/' . $barang->foto) }}" class="w-full h-64 object-cover rounded-lg shadow-md" alt="{{ $barang->nama_barang }}">
                                 </div>
                             @else
                                 <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">

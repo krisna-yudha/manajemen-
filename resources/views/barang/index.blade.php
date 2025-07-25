@@ -72,7 +72,7 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($barang->foto)
-                                            <img src="{{ Storage::url($barang->foto) }}" class="h-12 w-12 object-cover rounded" alt="{{ $barang->nama_barang }}">
+                                            <img src="{{ asset('storage/' . $barang->foto) }}" class="h-12 w-12 object-cover rounded" alt="{{ $barang->nama_barang }}">
                                         @else
                                             <div class="h-12 w-12 bg-gray-200 rounded flex items-center justify-center">
                                                 <span class="text-gray-400 text-xs">No Photo</span>

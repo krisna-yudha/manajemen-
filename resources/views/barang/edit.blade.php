@@ -150,7 +150,7 @@
                             <label for="foto" class="block text-sm font-medium text-gray-700">Foto Barang</label>
                             @if($barang->foto)
                                 <div class="mb-3">
-                                    <img src="{{ Storage::url($barang->foto) }}" class="h-32 w-32 object-cover rounded" alt="{{ $barang->nama_barang }}">
+                                    <img src="{{ asset('storage/' . $barang->foto) }}" class="h-32 w-32 object-cover rounded" alt="{{ $barang->nama_barang }}">
                                     <p class="text-sm text-gray-500">Foto saat ini</p>
                                 </div>
                             @endif
