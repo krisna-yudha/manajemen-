@@ -9,9 +9,40 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     if (Auth::check()) {
+        // Check if user wants to logout
+        if (request()->has('logout')) {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('login');
+        }
         return redirect()->route('dashboard');
     }
     return redirect()->route('login');
+});
+
+// Force logout route for testing
+Route::get('/force-logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('login')->with('status', 'You have been logged out successfully.');
+});
+
+// Debug route untuk test manager dashboard
+Route::get('/debug-manager', function () {
+    return view('manager.dashboard', [
+        'totalUsers' => 0,
+        'activeRentals' => 0,
+        'totalBarang' => 0,
+        'pendingApprovals' => 0,
+        'barangKeluar' => 0,
+        'barangMasuk' => 0,
+        'sedangRental' => 0,
+        'totalRental' => 0,
+        'kategoriSummary' => collect([]),
+        'recentActivities' => []
+    ]);
 });
 
 // Dashboard route with role-based redirection

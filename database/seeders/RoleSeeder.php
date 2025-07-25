@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class RoleSeeder extends Seeder
 {
@@ -14,8 +15,14 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        
         // Hapus semua user terlebih dahulu untuk menghindari konflik
         User::truncate();
+        
+        // Enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // Membuat user manager default
         User::create([

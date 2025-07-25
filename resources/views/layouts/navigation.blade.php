@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="@if(Auth::user()->role === 'manager'){{ route('manager.dashboard') }}@elseif(Auth::user()->role === 'gudang'){{ route('gudang.dashboard') }}@else{{ route('member.dashboard') }}@endif" class="flex items-center">
+                    <a href="@if(Auth::check() && Auth::user()->role === 'manager'){{ route('manager.dashboard') }}@elseif(Auth::check() && Auth::user()->role === 'gudang'){{ route('gudang.dashboard') }}@elseif(Auth::check()){{ route('member.dashboard') }}@else{{ route('login') }}@endif" class="flex items-center">
                         <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -17,7 +17,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @if(Auth::user()->role === 'manager')
+                    @if(Auth::check() && Auth::user()->role === 'manager')
                         <x-nav-link :href="route('manager.dashboard')" :active="request()->routeIs('manager.dashboard')" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -42,7 +42,7 @@
                             </svg>
                             Reports
                         </x-nav-link>
-                    @elseif(Auth::user()->role === 'gudang')
+                    @elseif(Auth::check() && Auth::user()->role === 'gudang')
                         <x-nav-link :href="route('gudang.dashboard')" :active="request()->routeIs('gudang.*')" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -73,7 +73,7 @@
                             </svg>
                             Maintenance
                         </x-nav-link>
-                    @elseif(Auth::user()->role === 'member')
+                    @elseif(Auth::check() && Auth::user()->role === 'member')
                         <x-nav-link :href="route('member.dashboard')" :active="request()->routeIs('member.dashboard')" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -101,7 +101,7 @@
                         </x-nav-link>
                     @endif
                     
-                    @if(Auth::user()->role === 'member')
+                    @if(Auth::check() && Auth::user()->role === 'member')
                         <x-nav-link :href="route('rental.index')" :active="request()->routeIs('rental.index')" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -124,8 +124,8 @@
                                     </svg>
                                 </div>
                                 <div class="text-left">
-                                    <div class="font-medium text-gray-900">{{ Auth::user()->name }}</div>
-                                    <div class="text-xs text-blue-600">{{ ucfirst(Auth::user()->role) }}</div>
+                                    <div class="font-medium text-gray-900">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
+                                    <div class="text-xs text-blue-600">{{ Auth::check() ? ucfirst(Auth::user()->role) : 'Guest' }}</div>
                                 </div>
                             </div>
 
@@ -177,7 +177,7 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white border-t border-gray-200">
         <div class="pt-2 pb-3 space-y-1 px-4">
-            @if(Auth::user()->role === 'manager')
+            @if(Auth::check() && Auth::user()->role === 'manager')
                 <x-responsive-nav-link :href="route('manager.dashboard')" :active="request()->routeIs('manager.dashboard')" class="flex items-center">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -202,7 +202,7 @@
                     </svg>
                     Reports
                 </x-responsive-nav-link>
-            @elseif(Auth::user()->role === 'gudang')
+            @elseif(Auth::check() && Auth::user()->role === 'gudang')
                 <x-responsive-nav-link :href="route('gudang.dashboard')" :active="request()->routeIs('gudang.*')" class="flex items-center">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -227,7 +227,7 @@
                     </svg>
                     All Rentals
                 </x-responsive-nav-link>
-            @elseif(Auth::user()->role === 'member')
+            @elseif(Auth::check() && Auth::user()->role === 'member')
                 <x-responsive-nav-link :href="route('member.dashboard')" :active="request()->routeIs('member.dashboard')" class="flex items-center">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -272,9 +272,9 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                        <div class="font-medium text-sm text-blue-600">{{ ucfirst(Auth::user()->role) }}</div>
-                        <div class="text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                        <div class="font-medium text-base text-gray-800">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
+                        <div class="font-medium text-sm text-blue-600">{{ Auth::check() ? ucfirst(Auth::user()->role) : 'Guest' }}</div>
+                        <div class="text-sm text-gray-500">{{ Auth::check() ? Auth::user()->email : '' }}</div>
                     </div>
                 </div>
             </div>

@@ -38,14 +38,14 @@ class RoleController extends Controller
     public function managerDashboard()
     {
         $totalUsers = \App\Models\User::count();
-        $activeRentals = \App\Models\Rental::where('status', 'active')->count();
+        $activeRentals = \App\Models\Rental::where('status', 'ongoing')->count();
         $totalBarang = \App\Models\Barang::count();
         $pendingApprovals = \App\Models\Rental::where('status', 'pending')->count();
         
         // Traffic data
-        $barangKeluar = \App\Models\Rental::whereIn('status', ['active', 'completed'])->count();
-        $barangMasuk = \App\Models\Rental::where('status', 'completed')->count();
-        $sedangRental = \App\Models\Rental::where('status', 'active')->count();
+        $barangKeluar = \App\Models\Rental::whereIn('status', ['ongoing', 'returned'])->count();
+        $barangMasuk = \App\Models\Rental::where('status', 'returned')->count();
+        $sedangRental = \App\Models\Rental::where('status', 'ongoing')->count();
         $totalRental = \App\Models\Rental::count();
         
         // Category summary
@@ -114,8 +114,8 @@ class RoleController extends Controller
         $statusRental = [
             'pending' => \App\Models\Rental::where('status', 'pending')->count(),
             'approved' => \App\Models\Rental::where('status', 'approved')->count(),
-            'ongoing' => \App\Models\Rental::where('status', 'ongoing')->count(),
-            'returned' => \App\Models\Rental::where('status', 'returned')->count(),
+            'active' => \App\Models\Rental::where('status', 'ongoing')->count(),
+            'completed' => \App\Models\Rental::where('status', 'returned')->count(),
             'rejected' => \App\Models\Rental::where('status', 'rejected')->count()
         ];
 
