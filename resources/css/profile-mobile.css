@@ -1,0 +1,71 @@
+/* Additional Mobile Optimization for Profile Page */
+
+/* Mobile-first responsive design */
+@media (max-width: 640px) {
+    .profile-header-content {
+        text-align: center !important;
+    }
+    
+    .profile-stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    .profile-form-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .profile-sidebar {
+        order: -1;
+        margin-bottom: 2rem;
+    }
+}
+
+/* Tablet responsiveness */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .profile-main-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .profile-sidebar {
+        order: -1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+}
+
+/* Enhanced focus states for accessibility */
+.profile-input:focus-visible,
+.profile-button:focus-visible {
+    outline: 2px solid #3B82F6;
+    outline-offset: 2px;
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+    .profile-card {
+        background-color: #1F2937;
+        border-color: #374151;
+    }
+    
+    .profile-input {
+        background-color: #374151;
+        border-color: #4B5563;
+        color: #F9FAFB;
+    }
+}
+
+/* Print styles */
+@media print {
+    .profile-button,
+    .profile-sidebar {
+        display: none !important;
+    }
+    
+    .profile-card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+}

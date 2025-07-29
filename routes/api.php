@@ -28,7 +28,7 @@ Route::get('/test', function () {
 });
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'active'])->group(function () {
     // Auth routes
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{id}', [UserController::class, 'show']);
             Route::put('/{id}', [UserController::class, 'update']);
             Route::delete('/{id}', [UserController::class, 'destroy']);
+            Route::patch('/{id}/toggle-status', [UserController::class, 'toggleStatus']);
         });
     });
     

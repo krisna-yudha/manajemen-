@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\RentalController;
+use App\Http\Controllers\Manager\UserController as ManagerUserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,8 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Manager routes
     Route::middleware(['role:manager'])->group(function () {
         Route::get('/manager/dashboard', [RoleController::class, 'managerDashboard'])->name('manager.dashboard');
-        Route::get('/manager/users', [RoleController::class, 'userManagement'])->name('manager.users');
-        Route::patch('/manager/users/{user}/role', [RoleController::class, 'updateUserRole'])->name('manager.users.update-role');
+        
+        // User Management Routes
+        Route::resource('manager/users', ManagerUserController::class)->except(['show']);
+        Route::patch('/manager/users/{user}/toggle-status', [ManagerUserController::class, 'toggleStatus'])->name('manager.users.toggle-status');
     });
 
     // Gudang routes
@@ -111,11 +114,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Manager report barang dengan grafik
         Route::get('/manager/report/barang', [RoleController::class, 'reportBarang'])->name('manager.report.barang');
         
-        // Manager khusus untuk user management
-        Route::get('/manager/users', [RoleController::class, 'userManagement'])->name('manager.users');
-        Route::get('/manager/users/create', [RoleController::class, 'createUser'])->name('manager.users.create');
-        Route::post('/manager/users', [RoleController::class, 'storeUser'])->name('manager.users.store');
-        Route::patch('/manager/users/{user}/role', [RoleController::class, 'updateUserRole'])->name('manager.users.update-role');
+        // Manager User Management - Complete CRUD
+        Route::resource('manager/users', \App\Http\Controllers\Manager\UserController::class, [
+            'names' => [
+                'index' => 'manager.users.index',
+                'create' => 'manager.users.create',
+                'store' => 'manager.users.store',
+                'show' => 'manager.users.show',
+                'edit' => 'manager.users.edit',
+                'update' => 'manager.users.update',
+                'destroy' => 'manager.users.destroy',
+            ]
+        ]);
+        Route::patch('/manager/users/{user}/toggle-status', [\App\Http\Controllers\Manager\UserController::class, 'toggleStatus'])->name('manager.users.toggle-status');
     });
     
     // Rental routes - All authenticated users

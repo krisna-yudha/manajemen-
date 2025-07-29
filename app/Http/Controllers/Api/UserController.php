@@ -18,6 +18,8 @@ class UserController extends Controller
     {
         $stats = [
             'total_users' => User::count(),
+            'active_users' => User::where('is_active', true)->count(),
+            'inactive_users' => User::where('is_active', false)->count(),
             'total_barangs' => Barang::count(),
             'total_rentals' => Rental::count(),
             'pending_rentals' => Rental::where('status', 'pending')->count(),
@@ -79,6 +81,12 @@ class UserController extends Controller
             $query->where('role', $request->role);
         }
 
+        // Filter by status
+        if ($request->has('status')) {
+            $isActive = $request->status === 'active';
+            $query->where('is_active', $isActive);
+        }
+
         // Search
         if ($request->has('search')) {
             $search = $request->search;
@@ -96,6 +104,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'is_active' => $user->is_active,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
             ];
@@ -128,6 +137,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'is_active' => $user->is_active,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
             ]
@@ -169,6 +179,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'is_active' => $user->is_active,
                 'created_at' => $user->created_at
             ]
         ], 201);
@@ -223,6 +234,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'is_active' => $user->is_active,
                 'updated_at' => $user->updated_at
             ]
         ]);
@@ -242,11 +254,58 @@ class UserController extends Controller
             ], 404);
         }
 
+        // Prevent deleting manager users
+        if ($user->role === 'manager') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cannot delete manager users'
+            ], 403);
+        }
+
         $user->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'User deleted successfully'
+        ]);
+    }
+
+    /**
+     * Toggle user active status
+     */
+    public function toggleStatus($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Prevent deactivating manager users
+        if ($user->role === 'manager') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cannot deactivate manager users'
+            ], 403);
+        }
+
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $user->is_active ? 'User activated successfully' : 'User deactivated successfully',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'is_active' => $user->is_active,
+                'updated_at' => $user->updated_at
+            ]
         ]);
     }
 }

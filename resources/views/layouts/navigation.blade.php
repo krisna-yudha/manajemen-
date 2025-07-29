@@ -24,7 +24,7 @@
                             </svg>
                             Dashboard
                         </x-nav-link>
-                        <x-nav-link :href="route('manager.users')" :active="request()->routeIs('manager.users*')" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <x-nav-link :href="route('manager.users.index')" :active="request()->routeIs('manager.users*')" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                             </svg>
@@ -92,12 +92,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             Ajukan Rental
-                        </x-nav-link>
-                        <x-nav-link :href="route('member.rental.history')" :active="request()->routeIs('member.rental.*')" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Riwayat Rental
                         </x-nav-link>
                     @endif
                     
@@ -184,7 +178,7 @@
                     </svg>
                     Dashboard
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('manager.users')" :active="request()->routeIs('manager.users*')" class="flex items-center">
+                <x-responsive-nav-link :href="route('manager.users.index')" :active="request()->routeIs('manager.users*')" class="flex items-center">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                     </svg>
@@ -246,12 +240,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                     Ajukan Rental
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('member.rental.history')" :active="request()->routeIs('member.rental.*')" class="flex items-center">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Riwayat Rental
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('rental.index')" :active="request()->routeIs('rental.index')" class="flex items-center">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
