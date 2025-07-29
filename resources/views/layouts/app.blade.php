@@ -2,9 +2,10 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, maximum-scale=5">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-
+        <meta name="format-detection" content="telephone=no">
+        
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
@@ -15,7 +16,24 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         
         <style>
-            body { font-family: 'Inter', sans-serif; }
+            body { 
+                font-family: 'Inter', sans-serif;
+                touch-action: manipulation;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+            
+            /* Allow text selection for inputs and content */
+            input, textarea, [contenteditable] {
+                -webkit-user-select: text !important;
+                -moz-user-select: text !important;
+                -ms-user-select: text !important;
+                user-select: text !important;
+            }
         </style>
     </head>
     <body class="font-sans antialiased bg-gray-50">

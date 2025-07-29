@@ -281,7 +281,6 @@
                                 <!-- Mark as Taken -->
                                 <form action="{{ route('rental.take', $rental) }}" method="POST" class="inline-block">
                                     @csrf
-                                    @method('PATCH')
                                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
                                         Konfirmasi Diambil
                                     </button>
@@ -290,13 +289,9 @@
 
                             @if($rental->status === 'ongoing' && auth()->user()->role === 'gudang')
                                 <!-- Mark as Returned -->
-                                <form action="{{ route('rental.return', $rental) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                                        Konfirmasi Dikembalikan
-                                    </button>
-                                </form>
+                                <button onclick="openReturnModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    Konfirmasi Dikembalikan
+                                </button>
                             @endif
 
                             <!-- Back Button -->
@@ -317,7 +312,6 @@
                 <h3 class="text-lg font-medium text-gray-900 text-center">Setujui Rental</h3>
                 <form action="{{ route('rental.approve', $rental) }}" method="POST" class="mt-4">
                     @csrf
-                    @method('PATCH')
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Catatan Approval (Opsional)</label>
                         <textarea name="catatan_approval" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Tambahkan catatan approval..."></textarea>
@@ -342,7 +336,6 @@
                 <h3 class="text-lg font-medium text-gray-900 text-center">Tolak Rental</h3>
                 <form action="{{ route('rental.reject', $rental) }}" method="POST" class="mt-4">
                     @csrf
-                    @method('PATCH')
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Penolakan <span class="text-red-500">*</span></label>
                         <textarea name="catatan_approval" rows="3" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Masukkan alasan penolakan..."></textarea>
@@ -353,6 +346,41 @@
                         </button>
                         <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
                             Tolak
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Modal -->
+    <div id="returnModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 text-center">Konfirmasi Pengembalian</h3>
+                <form action="{{ route('rental.return', $rental) }}" method="POST" class="mt-4">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kondisi Barang <span class="text-red-500">*</span></label>
+                        <select name="kondisi_kembali" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Pilih kondisi barang</option>
+                            <option value="baik">Baik</option>
+                            <option value="rusak ringan">Rusak Ringan</option>
+                            <option value="rusak berat">Rusak Berat</option>
+                            <option value="hilang">Hilang</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Denda (Rp)</label>
+                        <input type="number" name="denda" min="0" step="1000" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0">
+                        <p class="text-xs text-gray-500 mt-1">Kosongkan jika tidak ada denda</p>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeReturnModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm">
+                            Batal
+                        </button>
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
+                            Konfirmasi Dikembalikan
                         </button>
                     </div>
                 </form>
@@ -377,15 +405,27 @@
             document.getElementById('rejectModal').classList.add('hidden');
         }
 
+        function openReturnModal() {
+            document.getElementById('returnModal').classList.remove('hidden');
+        }
+
+        function closeReturnModal() {
+            document.getElementById('returnModal').classList.add('hidden');
+        }
+
         // Close modal when clicking outside
         window.onclick = function(event) {
             let approveModal = document.getElementById('approveModal');
             let rejectModal = document.getElementById('rejectModal');
+            let returnModal = document.getElementById('returnModal');
             if (event.target == approveModal) {
                 approveModal.classList.add('hidden');
             }
             if (event.target == rejectModal) {
                 rejectModal.classList.add('hidden');
+            }
+            if (event.target == returnModal) {
+                returnModal.classList.add('hidden');
             }
         }
     </script>

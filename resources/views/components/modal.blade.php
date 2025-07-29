@@ -1,7 +1,10 @@
 @props([
     'name',
     'show' => false,
-    'maxWidth' => '2xl'
+    'maxWidth' => '2xl',
+    'type' => 'default', // default, danger, success, warning, info
+    'title' => null,
+    'closable' => true
 ])
 
 @php
@@ -11,7 +14,26 @@ $maxWidth = [
     'lg' => 'sm:max-w-lg',
     'xl' => 'sm:max-w-xl',
     '2xl' => 'sm:max-w-2xl',
+    '3xl' => 'sm:max-w-3xl',
+    '4xl' => 'sm:max-w-4xl',
+    '5xl' => 'sm:max-w-5xl',
 ][$maxWidth];
+
+$typeClasses = [
+    'default' => 'border-gray-200',
+    'danger' => 'border-red-200',
+    'success' => 'border-green-200',
+    'warning' => 'border-yellow-200',
+    'info' => 'border-blue-200'
+];
+
+$headerColors = [
+    'default' => 'bg-gray-50 text-gray-900',
+    'danger' => 'bg-red-50 text-red-900',
+    'success' => 'bg-green-50 text-green-900',
+    'warning' => 'bg-yellow-50 text-yellow-900',
+    'info' => 'bg-blue-50 text-blue-900'
+];
 @endphp
 
 <div

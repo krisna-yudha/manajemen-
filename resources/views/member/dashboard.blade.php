@@ -1,53 +1,102 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Member Dashboard - Rental Barang
-        </h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Member Dashboard</h2>
+                <p class="text-gray-600 mt-1">Rental Barang & Equipment</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                    ✓ Member Access
+                </span>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Welcome Card -->
-            <div class="bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden shadow-sm sm:rounded-lg mb-8">
-                <div class="p-6 text-white">
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Welcome Section -->
+            <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-lg mb-6 md:mb-8">
+                <div class="px-4 py-6 md:px-8 md:py-8">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="w-10 h-10 md:w-12 md:h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-6">
-                            <h3 class="text-2xl font-bold">Selamat Datang, {{ Auth::user()->name }}!</h3>
-                            <p class="text-blue-100 mt-1">Kelola rental barang Anda dengan mudah</p>
+                        <div class="ml-4">
+                            <h3 class="text-xl md:text-2xl font-semibold text-white">Selamat datang kembali!</h3>
+                            <p class="text-purple-100">{{ Auth::user()->name }} • Member</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
                 <!-- My Active Rentals -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-500">Rental Aktif</div>
-                                <div class="text-2xl font-bold text-gray-900">{{ $myActiveRentals ?? '0' }}</div>
-                            </div>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-green-100 rounded-xl">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <div class="text-xl md:text-2xl font-bold text-gray-900">{{ $myActiveRentals ?? '0' }}</div>
+                            <div class="text-xs md:text-sm text-gray-600">Rental Aktif</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Pending Approvals -->
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-yellow-100 rounded-xl">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <div class="text-xl md:text-2xl font-bold text-gray-900">{{ $myPendingRentals ?? '0' }}</div>
+                            <div class="text-xs md:text-sm text-gray-600">Menunggu</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Rentals -->
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-blue-100 rounded-xl">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h6v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <div class="text-xl md:text-2xl font-bold text-gray-900">{{ $myTotalRentals ?? '0' }}</div>
+                            <div class="text-xs md:text-sm text-gray-600">Total Rental</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Items -->
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-indigo-100 rounded-xl">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2C5.477 2 2 5.477 2 10s3.477 8 8 8 8-3.477 8-8-3.477-8-8-8zM8 5a1 1 0 100 2h4a1 1 0 100-2H8zm-1 4a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm1 3a1 1 0 100 2h4a1 1 0 100-2H8z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <div class="text-xl md:text-2xl font-bold text-gray-900">{{ $availableItems ?? '0' }}</div>
+                            <div class="text-xs md:text-sm text-gray-600">Tersedia</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">

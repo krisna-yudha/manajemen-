@@ -51,6 +51,11 @@ Route::get('/dashboard', [RoleController::class, 'dashboard'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// Components Demo Route
+Route::get('/components-demo', function () {
+    return view('components-demo');
+})->middleware(['auth', 'verified'])->name('components-demo');
+
 // Role-specific dashboard routes
 Route::middleware(['auth', 'verified'])->group(function () {
     // Manager routes

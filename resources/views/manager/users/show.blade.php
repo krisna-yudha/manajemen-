@@ -1,33 +1,55 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center">
-                <svg class="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-                Detail User: {{ $user->name }}
-            </h2>
-            <div class="flex space-x-3">
-                <a href="{{ route('manager.users.edit', $user) }}" 
-                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                    Edit
-                </a>
-                <a href="{{ route('manager.users.index') }}" 
-                   class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Kembali
-                </a>
-            </div>
-        </div>
+<x-enhanced-layout>
+    <x-slot name="title">Detail User: {{ $user->name }}</x-slot>
+
+    <x-slot name="actions">
+        <a href="{{ route('manager.users.edit', $user) }}" 
+           class="btn-primary inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+           style="cursor: pointer;">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Edit User
+        </a>
+        <a href="{{ route('manager.users.index') }}" 
+           class="btn-secondary inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200"
+           style="cursor: pointer;">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Kembali
+        </a>
     </x-slot>
 
-    <div class="py-8 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <x-slot name="breadcrumbs">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ route('dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <a href="{{ route('manager.users.index') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">Users</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ $user->name }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </x-slot>
 
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
@@ -83,28 +105,120 @@
                         </div>
 
                         <!-- Quick Actions -->
-                        <div class="p-6 bg-gray-50 border-t">
+                        <div class="p-6 bg-gray-50 border-t" x-data="{ 
+                            showDeleteConfirm: false,
+                            showStatusConfirm: false 
+                        }">
                             <h4 class="text-sm font-medium text-gray-900 mb-3">Quick Actions</h4>
+                            
+                            <!-- Test Button for Debugging -->
+                            <div class="mb-4 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                                <button type="button"
+                                        onclick="testClick()"
+                                        class="w-full px-3 py-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                                        style="cursor: pointer;">
+                                    🧪 Test Click (Debug)
+                                </button>
+                                <button type="button"
+                                        x-data="debugClick()"
+                                        @click="test()"
+                                        class="w-full mt-1 px-3 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded"
+                                        style="cursor: pointer;">
+                                    🧪 Test Alpine Click
+                                </button>
+                            </div>
+                            
                             <div class="space-y-2">
-                                <form method="POST" action="{{ route('manager.users.toggle-status', $user) }}" 
-                                      onsubmit="return confirm('Yakin ingin {{ $user->is_active ? 'menonaktifkan' : 'mengaktifkan' }} user ini?')">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" 
-                                            class="w-full text-left px-3 py-2 text-sm text-{{ $user->is_active ? 'red' : 'green' }}-600 hover:bg-{{ $user->is_active ? 'red' : 'green' }}-50 rounded-lg">
-                                        {{ $user->is_active ? 'Nonaktifkan User' : 'Aktifkan User' }}
-                                    </button>
-                                </form>
+                                <!-- Toggle Status Button -->
+                                <button type="button"
+                                        @click="showStatusConfirm = true"
+                                        class="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors duration-200 {{ $user->is_active ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50' }}"
+                                        style="cursor: pointer; background-color: transparent; border: none;">
+                                    {{ $user->is_active ? 'Nonaktifkan User' : 'Aktifkan User' }}
+                                </button>
                                 
-                                <form method="POST" action="{{ route('manager.users.destroy', $user) }}" 
-                                      onsubmit="return confirm('Yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">
-                                        Hapus User
-                                    </button>
-                                </form>
+                                <!-- Delete Button -->
+                                <button type="button"
+                                        @click="showDeleteConfirm = true"
+                                        class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                                        style="cursor: pointer; background-color: transparent; border: none;">
+                                    Hapus User
+                                </button>
+                            </div>
+
+                            <!-- Status Confirmation Modal -->
+                            <div x-show="showStatusConfirm" 
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-200"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                                 style="z-index: 9999;"
+                                 @click.self="showStatusConfirm = false"
+                                 @keydown.escape.window="showStatusConfirm = false">
+                                <div class="bg-white rounded-xl p-6 max-w-md mx-4 shadow-xl">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Konfirmasi Perubahan Status</h3>
+                                    <p class="text-gray-600 mb-6">
+                                        Yakin ingin {{ $user->is_active ? 'menonaktifkan' : 'mengaktifkan' }} user <strong>{{ $user->name }}</strong>?
+                                    </p>
+                                    <div class="flex justify-end space-x-3">
+                                        <button type="button" 
+                                                @click="showStatusConfirm = false"
+                                                class="btn-secondary inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200"
+                                                style="cursor: pointer;">
+                                            Batal
+                                        </button>
+                                        <form method="POST" action="{{ route('manager.users.toggle-status', $user) }}" class="inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" 
+                                                    class="btn-{{ $user->is_active ? 'danger' : 'success' }} inline-flex items-center px-4 py-2 {{ $user->is_active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-medium rounded-lg transition-colors duration-200"
+                                                    style="cursor: pointer;">
+                                                {{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Confirmation Modal -->
+                            <div x-show="showDeleteConfirm" 
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-200"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                                 style="z-index: 9999;"
+                                 @click.self="showDeleteConfirm = false"
+                                 @keydown.escape.window="showDeleteConfirm = false">
+                                <div class="bg-white rounded-xl p-6 max-w-md mx-4 shadow-xl">
+                                    <h3 class="text-lg font-medium text-red-900 mb-4">Konfirmasi Hapus User</h3>
+                                    <p class="text-gray-600 mb-6">
+                                        Yakin ingin menghapus user <strong>{{ $user->name }}</strong>? 
+                                        <br><span class="text-red-600 font-medium">Tindakan ini tidak dapat dibatalkan.</span>
+                                    </p>
+                                    <div class="flex justify-end space-x-3">
+                                        <button type="button" 
+                                                @click="showDeleteConfirm = false"
+                                                class="btn-secondary inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200"
+                                                style="cursor: pointer;">
+                                            Batal
+                                        </button>
+                                        <form method="POST" action="{{ route('manager.users.destroy', $user) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="btn-danger inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200"
+                                                    style="cursor: pointer;">
+                                                Hapus User
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -253,6 +367,95 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</x-app-layout>
+
+</x-enhanced-layout>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('User show page loaded');
+    
+    // Force all links and buttons to be clickable
+    const allClickables = document.querySelectorAll('a, button, [role="button"]');
+    allClickables.forEach(element => {
+        // Ensure element is clickable
+        element.style.cursor = 'pointer';
+        element.style.pointerEvents = 'auto';
+        element.style.userSelect = 'none';
+        
+        // Add click event listener for feedback
+        element.addEventListener('click', function(e) {
+            console.log('Element clicked:', this.tagName, this.textContent?.trim());
+            
+            // Visual feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 100);
+        });
+        
+        // Add hover effect
+        element.addEventListener('mouseenter', function() {
+            this.style.opacity = '0.9';
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            this.style.opacity = '1';
+        });
+    });
+    
+    // Ensure forms are submittable
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            console.log('Form submitted:', this.action);
+            
+            // Show loading state on submit button
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.style.opacity = '0.7';
+                submitBtn.textContent += '...';
+            }
+        });
+    });
+    
+    // Force Alpine.js to initialize if not already
+    if (typeof Alpine !== 'undefined' && !window.Alpine) {
+        console.log('Starting Alpine.js manually');
+        Alpine.start();
+    }
+});
+
+// Alpine.js initialization
+document.addEventListener('alpine:init', () => {
+    console.log('Alpine.js initialized for user show page');
+    
+    // Debug Alpine data
+    Alpine.data('debugClick', () => ({
+        test() {
+            console.log('Alpine click test works!');
+            alert('Alpine.js is working!');
+        }
+    }));
+});
+
+// Add a test button to verify functionality
+window.testClick = function() {
+    console.log('Global test function called');
+    alert('JavaScript is working!');
+};
+
+// Force refresh Alpine components after page load
+setTimeout(() => {
+    if (typeof Alpine !== 'undefined') {
+        console.log('Re-initializing Alpine components');
+        document.querySelectorAll('[x-data]').forEach(el => {
+            if (el._x_dataStack) {
+                Alpine.destroyTree(el);
+                Alpine.initTree(el);
+            }
+        });
+    }
+}, 100);
+</script>
+@endpush
